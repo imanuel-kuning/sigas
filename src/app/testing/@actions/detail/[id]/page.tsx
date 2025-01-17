@@ -1,12 +1,12 @@
 'use client'
 
-import { get } from '@/actions/training'
+import { get } from '@/actions/testing'
 import AppCard from '@/components/app-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useEffect, useState, useTransition } from 'react'
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
-  const [data, setData] = useState<Training>()
+  const [data, setData] = useState<Testing>()
   const [isPending, setTransition] = useTransition()
   useEffect(() => {
     setTransition(async () => {
@@ -34,6 +34,14 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           <div>
             <h1>Text</h1>
             <p>{data?.text}</p>
+          </div>
+          <div>
+            <h1>Location</h1>
+            <p>{data?.location}</p>
+          </div>
+          <div>
+            <h1>Date</h1>
+            <p>{data?.date}</p>
           </div>
           <div>
             <h1>Sentiment</h1>

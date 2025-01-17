@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar'
 import { useEffect, useTransition } from 'react'
 import { count as countTraining } from '@/actions/training'
+import { count as countTesting } from '@/actions/testing'
 import { Loader2 } from 'lucide-react'
 import { useRefresh } from '@/hooks/use-refresh'
 
@@ -17,7 +18,14 @@ export default function AppSidebarItem({ item }: { item: Sidebar }) {
   useEffect(() => {
     setTransition(async () => {
       const training = await countTraining()
-      item.badge = item.url === '/training' && training ? training : null
+      const testing = await countTesting()
+      item.badge = 0
+      if (item.url === '/training' && training) {
+        item.badge = training
+      }
+      if (item.url === '/testing' && testing) {
+        item.badge = testing
+      }
     })
   }, [watch])
 

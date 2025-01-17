@@ -1,6 +1,6 @@
 'use client'
 
-import { Database, Home } from 'lucide-react'
+import { ChartBar, CircuitBoard, Combine, Database, Home, Map } from 'lucide-react'
 
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
 import AppSidebarItem from './app-sidebar-item'
@@ -12,7 +12,16 @@ const dashboard = [
     title: 'Home',
     url: '/',
     icon: Home,
-    badge: null,
+  },
+  {
+    title: 'Map',
+    url: '/map',
+    icon: Map,
+  },
+  {
+    title: 'Chart',
+    url: '/chart',
+    icon: ChartBar,
   },
 ]
 
@@ -21,13 +30,26 @@ const dataset = [
     title: 'Data Training',
     url: '/training',
     icon: Database,
-    badge: null,
+    badge: 0,
   },
   {
     title: 'Data Testing',
     url: '/testing',
     icon: Database,
-    badge: null,
+    badge: 0,
+  },
+]
+
+const process = [
+  {
+    title: 'Model',
+    url: '/model',
+    icon: CircuitBoard,
+  },
+  {
+    title: 'Predict',
+    url: '/predict',
+    icon: Combine,
   },
 ]
 
@@ -67,6 +89,24 @@ export function AppSidebar() {
             <SidebarMenu>
               {dataset.map((item, index) => (
                 <AppSidebarItem item={item} key={index} />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Process</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {process.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={pathName === item.url}>
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>

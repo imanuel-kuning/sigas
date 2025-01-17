@@ -37,7 +37,7 @@ export function AppTable<TData, TValue>({ columns, data }: DataTableProps<TData,
 
   return (
     <div
-      className="rounded border p-2 
+      className="rounded border p-2 overflow-auto
     "
     >
       <div className="flex items-center py-2 px-1">

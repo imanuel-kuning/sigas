@@ -7,25 +7,29 @@ import { Loader2, Save } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import AppCard from '@/components/app-card'
-import { storeMany } from '@/actions/training'
+import { storeMany } from '@/actions/testing'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import csv from 'csvtojson'
+import { convertToISOString, getProvince } from '@/lib/utils'
 
 const formSchema = z.object({
   file: z.any(),
+  location: z.string(),
 })
 
 export default function Page() {
   const { refresh } = useRefresh()
   const [isPending, setTransition] = useTransition()
-  const [data, setData] = useState<TrainingData[]>([])
+  const [data, setData] = useState<TestingData[]>([])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       file: '',
+      location: '',
     },
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -41,7 +45,7 @@ export default function Page() {
   }
 
   // eslint-disable-next-line
-  function handleChange(event: any) {
+  function handleChangeFile(event: any) {
     const file = event.target.files[0]
     const reader = new FileReader()
 
@@ -49,11 +53,23 @@ export default function Page() {
     reader.onload = (e: any) => {
       const text = e.target.result
       setTransition(async () => {
-        const json = await csv({ delimiter: ',', headers: ['text', 'sentiment'] }).fromString(text)
-        setData(json)
+        const json = await csv({ delimiter: ',', headers: ['', 'date', '', 'text'] }).fromString(text)
+        const result = json.map(({ text, date }) => {
+          date = convertToISOString(date)
+          return { text, location: '', date }
+        })
+        setData(result)
       })
     }
     reader.readAsText(file)
+  }
+
+  // eslint-disable-next-line
+  function handleChangeLocation(event: any) {
+    const result = data.map(({ text, date }) => {
+      return { text, location: event, date }
+    })
+    setData(result)
   }
 
   return (
@@ -68,13 +84,39 @@ export default function Page() {
                 <FormItem>
                   <FormLabel>File</FormLabel>
                   <FormControl>
-                    <Input type="file" {...field} onChangeCapture={handleChange} />
+                    <Input type="file" {...field} onChangeCapture={handleChangeFile} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={handleChangeLocation} defaultValue={field.value} required>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {getProvince().map(({ code, province }) => (
+                          <SelectItem key={code} value={province.toLowerCase().replace(' ', '-')}>
+                            {province}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button type="submit" variant="outline" size="sm" disabled={isPending}>
               {isPending && <Loader2 className="animate-spin" />}
               Save

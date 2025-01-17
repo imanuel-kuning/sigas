@@ -10,20 +10,23 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import AppCard from '@/components/app-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { get, update } from '@/actions/training'
+import { get, update } from '@/actions/testing'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Skeleton } from '@/components/ui/skeleton'
+import { getProvince } from '@/lib/utils'
+import { Input } from '@/components/ui/input'
 
 const formSchema = z.object({
   text: z.string().nonempty(),
-  sentiment: z.string().nonempty(),
+  location: z.string().nonempty(),
+  date: z.string().nonempty(),
 })
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { refresh } = useRefresh()
   const router = useRouter()
-  const [data, setData] = useState<Training>()
+  const [data, setData] = useState<Testing>()
   const [isPending, setTransition] = useTransition()
 
   useEffect(() => {
@@ -38,18 +41,20 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       text: '',
-      sentiment: '',
+      location: '',
+      date: '',
     },
     values: {
       text: data?.text as string,
-      sentiment: data?.sentiment as string,
+      location: data?.location as string,
+      date: data?.date as string,
     },
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
     setTransition(async () => {
       const res = await update(data?._id as string, values)
       toast.success(res.message)
-      router.push('/training')
+      router.push('/testing')
       setTransition(refresh)
     })
   }
@@ -63,6 +68,10 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
               <div className="space-y-1">
                 <Skeleton className="w-20 h-6" />
                 <Skeleton className="w-full h-32" />
+              </div>
+              <div className="space-y-1">
+                <Skeleton className="w-20 h-6" />
+                <Skeleton className="w-full h-10" />
               </div>
               <div className="space-y-1">
                 <Skeleton className="w-20 h-6" />
@@ -87,22 +96,39 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
               <FormField
                 control={form.control}
-                name="sentiment"
+                name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sentiment</FormLabel>
+                    <FormLabel>Location</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue />
+                            <SelectValue placeholder="Choose" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="positive">Positive</SelectItem>
-                          <SelectItem value="negative">Negative</SelectItem>
+                          {getProvince().map(({ code, province }) => (
+                            <SelectItem key={code} value={province.toLowerCase().replace(' ', '-')}>
+                              {province}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="datetime-local" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

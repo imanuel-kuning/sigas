@@ -5,6 +5,7 @@ import AppCard from '@/components/app-card'
 import { AppTable } from '@/components/app-table'
 import { AppDatatableSorting } from '@/components/app-table-sort'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useRefresh } from '@/hooks/use-refresh'
 import { ColumnDef } from '@tanstack/react-table'
 import { MoreHorizontal } from 'lucide-react'
@@ -59,8 +60,20 @@ export default function Page() {
 
   return (
     <AppCard title="Data Training">
-      {isPending && 'Loading'}
-      <AppTable columns={columns} data={data} />
+      {isPending ? (
+        <Skeleton className="w-full h-[350px] p-2 space-y-2">
+          <Skeleton className="w-1/3 h-[35px]" />
+          <Skeleton className="w-full h-[40px]" />
+          <Skeleton className="w-full h-[33px]" />
+          <Skeleton className="w-full h-[33px]" />
+          <Skeleton className="w-full h-[33px]" />
+          <Skeleton className="w-full h-[33px]" />
+          <Skeleton className="w-full h-[33px]" />
+          <Skeleton className="w-full h-[40px]" />
+        </Skeleton>
+      ) : (
+        <AppTable columns={columns} data={data} />
+      )}
     </AppCard>
   )
 }
