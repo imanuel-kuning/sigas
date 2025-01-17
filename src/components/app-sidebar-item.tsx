@@ -37,7 +37,7 @@ export default function AppSidebarItem({ item }: { item: Sidebar }) {
           <span>{item.title}</span>
         </Link>
       </SidebarMenuButton>
-      <SidebarMenuBadge>{isPending && pathName.startsWith(item.url) ? <Loader2 size={15} className="animate-spin" /> : item.badge}</SidebarMenuBadge>
+      <SidebarMenuBadge>{isPending ? <Loader2 size={15} className="animate-spin" /> : item.badge}</SidebarMenuBadge>
     </SidebarMenuItem>
   )
 }

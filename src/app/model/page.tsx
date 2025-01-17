@@ -1,5 +1,7 @@
 'use client'
 
+export const maxDuration = 60
+
 import { analysis, index, store, vectorizer } from '@/actions/model'
 import AppCard from '@/components/app-card'
 import { AppTable } from '@/components/app-table'
