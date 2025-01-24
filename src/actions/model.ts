@@ -3,19 +3,21 @@
 import { confusionMatrix, randomForest, split } from '@/lib/analysis'
 import db from '@/lib/database'
 import { Preprocessing } from '@/lib/preprocessing'
-import { vector } from '@/lib/utils'
+import { smoteSampling, vector } from '@/lib/utils'
 
-const training = (await db())?.collection('training')
+const dataset = (await db())?.collection('dataset')
 const settings = (await db())?.collection('settings')
 const features = (await db())?.collection('features')
 
 export async function index() {
   const setting = JSON.parse(JSON.stringify(await settings?.find({}).limit(1).toArray()))
 
-  const result = await training?.aggregate([{ $sample: { size: parseInt(setting[0].dataset_size) } }]).toArray()
-  const json = JSON.parse(JSON.stringify(result))
+  const positive = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'positive' } }, { $sample: { size: parseInt(setting[0].dataset_size) / 2 } }]).toArray()))
+  const negative = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'negative' } }, { $sample: { size: parseInt(setting[0].dataset_size) / 2 } }]).toArray()))
 
-  const res = json.map((data: PreprocessingData) => {
+  const result = [...positive, ...negative]
+
+  const res = result.map((data: PreprocessingData) => {
     const TP = new Preprocessing(data.text)
     data.clean = TP.clean().print()
     data.stem = TP.stem().print()
@@ -35,10 +37,16 @@ export async function vectorizer(data: PreprocessingData[]) {
     const label = sentiment == 'positive' ? 1 : 0
     return { feature, label }
   })
-  return result
+
+  const positive = result.filter(({ label }) => label == 1)
+  const negative = result.filter(({ label }) => label == 0)
+
+  const adds = smoteSampling(positive, negative)
+
+  return [...result, ...adds]
 }
 
-export async function analysis(vector: Vector[]) {
+export async function analysis(vector: Features[]) {
   const setting = JSON.parse(JSON.stringify(await settings?.find({}).limit(1).toArray()))
   const [x_train, y_train, x_test, y_test] = split(vector, parseFloat(setting[0].split_size))
   const y_prediction = randomForest(x_train, y_train, x_test)

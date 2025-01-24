@@ -1,11 +1,11 @@
 'use client'
 
-import { ChartBar, CircuitBoard, Combine, Database, Home, Map } from 'lucide-react'
+import { ChartBar, CircuitBoard, Combine, Database, Home, Map, Twitter } from 'lucide-react'
 
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
-import AppSidebarItem from './app-sidebar-item'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import AppSidebarBadge from './app-sidebar-badge'
 
 const dashboard = [
   {
@@ -27,34 +27,35 @@ const dashboard = [
 
 const dataset = [
   {
-    title: 'Data Training',
-    url: '/training',
+    title: 'Dataset',
+    url: '/dataset',
     icon: Database,
     badge: 0,
   },
   {
-    title: 'Data Testing',
-    url: '/testing',
-    icon: Database,
+    title: 'X Posts',
+    url: '/posts',
+    icon: Twitter,
     badge: 0,
   },
 ]
 
 const process = [
   {
-    title: 'Model',
+    title: 'Model Evaluation',
     url: '/model',
     icon: CircuitBoard,
   },
   {
-    title: 'Predict',
-    url: '/predict',
+    title: 'Classification',
+    url: '/classification',
     icon: Combine,
   },
 ]
 
 export function AppSidebar() {
   const pathName = usePathname()
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -88,7 +89,15 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {dataset.map((item, index) => (
-                <AppSidebarItem item={item} key={index} />
+                <SidebarMenuItem key={index}>
+                  <SidebarMenuButton asChild isActive={pathName.startsWith(item.url)}>
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                  <AppSidebarBadge url={item.url} num={item.badge} />
+                </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>

@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 //@ts-expect-error packaga doesn't include types
 import { tfidf, tokenize } from 'mimir'
+//@ts-expect-error packaga doesn't include types
+import SMOTE from 'smote'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -214,4 +216,18 @@ export function vector(texts: string[], corpus: string[], size: number) {
 
   // Update result vector
   return result
+}
+
+export function smoteSampling(positive: Features[], negative: Features[]) {
+  if (positive.length < negative.length) {
+    const smote = new SMOTE(positive.map(({ feature }) => feature))
+    const newFeatures = smote.generate(negative.length - positive.length)
+    const result = newFeatures.map((feature: number[]) => ({ feature, label: 1 }))
+    return result
+  } else {
+    const smote = new SMOTE(negative.map(({ feature }) => feature))
+    const newFeatures = smote.generate(positive.length - negative.length)
+    const result = newFeatures.map((feature: number[]) => ({ feature, label: 0 }))
+    return result
+  }
 }

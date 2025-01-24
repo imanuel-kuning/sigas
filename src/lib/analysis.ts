@@ -3,16 +3,17 @@ import { ConfusionMatrix } from 'ml-confusion-matrix'
 //@ts-expect-error packaga doesn't include types
 import trainTestSplit from 'train-test-split'
 
-export function split(vector: Vector[], ratio: number) {
+export function split(vector: Features[], ratio: number) {
   const x = vector.map(({ feature }) => feature)
   const y = vector.map(({ label }) => label)
-  const [x_train, x_test] = trainTestSplit(x, ratio)
-  const [y_train, y_test] = trainTestSplit(y, ratio)
+  const seed = Math.floor(Math.random() * 100)
+  const [x_train, x_test] = trainTestSplit(x, ratio, seed)
+  const [y_train, y_test] = trainTestSplit(y, ratio, seed)
   return [x_train, y_train, x_test, y_test]
 }
 
 export function randomForest(x_train: number[][], y_train: number[], x_test: number[][]) {
-  const classifier = new RandomForestClassifier({ nEstimators: 100 })
+  const classifier = new RandomForestClassifier({ seed: 3, maxFeatures: 0.8, replacement: true, nEstimators: 25 })
   classifier.train(x_train, y_train)
   return classifier.predict(x_test)
 }

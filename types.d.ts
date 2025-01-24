@@ -10,18 +10,18 @@ interface Watcher {
   refresh: () => void
 }
 
-interface Training {
+interface Dataset {
   _id: string
   text: string
   sentiment: string
 }
 
-interface TrainingData {
+interface DatasetData {
   text: string
   sentiment: string
 }
 
-interface Testing {
+interface Posts {
   _id: string
   text: string
   location: string
@@ -29,7 +29,7 @@ interface Testing {
   sentiment: string
 }
 
-interface TestingData {
+interface PostsData {
   text: string
   location: string
   date: string
@@ -42,11 +42,6 @@ interface PreprocessingData {
   stem: string
   stopword: string
   sentiment: string
-}
-
-interface Vector {
-  feature: number[]
-  label: number
 }
 
 interface Settings {

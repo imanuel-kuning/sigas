@@ -9,10 +9,10 @@ import { AppDatatableSorting } from '@/components/app-table-sort'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ColumnDef } from '@tanstack/react-table'
 import { useState, useTransition } from 'react'
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { RefreshCcw, Save, Settings } from 'lucide-react'
+import { Loader2, RefreshCcw, Save, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 
 const columnsTP: ColumnDef<PreprocessingData>[] = [
@@ -38,7 +38,7 @@ const columnsTP: ColumnDef<PreprocessingData>[] = [
   },
 ]
 
-const columnsV: ColumnDef<{ feature: number[]; label: number }>[] = [
+const columnsV: ColumnDef<Features>[] = [
   {
     accessorKey: 'feature',
     header: 'Feature',
@@ -56,7 +56,7 @@ const columnsV: ColumnDef<{ feature: number[]; label: number }>[] = [
 
 export default function Page() {
   const [data, setData] = useState<PreprocessingData[]>([])
-  const [vectors, setVectors] = useState<Vector[]>([])
+  const [vectors, setVectors] = useState<Features[]>([])
   const [result, setResult] = useState<{ accuracy: number }>({ accuracy: 0 })
   const [isPending, setTransition] = useTransition()
 
@@ -79,45 +79,41 @@ export default function Page() {
   }
 
   return (
-    <section>
-      <div className="mb-3">
+    <section className="space-y-3 grid grid-cols-1">
+      <div>
         <AppCard title="Model Evaluation">
-          <div className="mb-3 flex gap-3">
-            <Link href="/model/settings">
-              <Button variant="outline" size="sm">
-                <Settings />
-                Settings
+          <div className="flex justify-between">
+            <div className="mb-3 flex gap-3">
+              <Link href="/model/settings">
+                <Button variant="outline" size="sm">
+                  <Settings />
+                  Settings
+                </Button>
+              </Link>
+              <Button variant="outline" size="sm" onClick={handleGenerate} disabled={isPending}>
+                <RefreshCcw />
+                Generate Features
               </Button>
-            </Link>
-            <Button variant="outline" size="sm" onClick={handleGenerate} disabled={isPending}>
-              <RefreshCcw />
-              Generate Features
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleSave} disabled={vectors.length < 1 || isPending}>
-              <Save />
-              Save Features
-            </Button>
-          </div>
-
-          {isPending ? (
-            <Skeleton className="h-[100px]" />
-          ) : (
-            <div>
-              <h1>{`Accuracy : ${result?.accuracy}`}</h1>
+              <Button variant="outline" size="sm" onClick={handleSave} disabled={vectors.length < 1 || isPending}>
+                <Save />
+                Save Features
+              </Button>
             </div>
-          )}
+
+            <div className="flex flex-col items-center">
+              {isPending ? <Loader2 className="animate-spin" size={40} /> : <h1 className="text-4xl">{`${result?.accuracy * 100}%`}</h1>}
+              <h1>Accuracy</h1>
+            </div>
+          </div>
         </AppCard>
       </div>
 
-      <ResizablePanelGroup direction="horizontal" className="space-x-2">
-        <ResizablePanel defaultSize={65}>
-          <AppCard title="Text Preprocessing">{isPending ? <Skeleton className="h-[100px]" /> : <AppTable columns={columnsTP} data={data} />}</AppCard>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel>
-          <AppCard title="Features Extraction">{isPending ? <Skeleton className="h-[100px]" /> : <AppTable columns={columnsV} data={vectors} />}</AppCard>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+      <div>
+        <AppCard title="Text Preprocessing">{isPending ? <Skeleton className="h-[100px]" /> : <AppTable columns={columnsTP} data={data} />}</AppCard>
+      </div>
+      <div>
+        <AppCard title="Features Extraction">{isPending ? <Skeleton className="h-[100px]" /> : <AppTable columns={columnsV} data={vectors} />}</AppCard>
+      </div>
     </section>
   )
 }
