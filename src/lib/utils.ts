@@ -218,16 +218,9 @@ export function vector(texts: string[], corpus: string[], size: number) {
   return result
 }
 
-export function smoteSampling(positive: Features[], negative: Features[]) {
-  if (positive.length < negative.length) {
-    const smote = new SMOTE(positive.map(({ feature }) => feature))
-    const newFeatures = smote.generate(negative.length - positive.length)
-    const result = newFeatures.map((feature: number[]) => ({ feature, label: 1 }))
-    return result
-  } else {
-    const smote = new SMOTE(negative.map(({ feature }) => feature))
-    const newFeatures = smote.generate(positive.length - negative.length)
-    const result = newFeatures.map((feature: number[]) => ({ feature, label: 0 }))
-    return result
-  }
+export function smoteSampling(features: Features[], label: number, size: number) {
+  const smote = new SMOTE(features.map(({ feature }) => feature))
+  const newFeatures = smote.generate(size)
+  const result = newFeatures.map((feature: number[]) => ({ feature, label }))
+  return result
 }

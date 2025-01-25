@@ -12,8 +12,11 @@ const features = (await db())?.collection('features')
 export async function index() {
   const setting = JSON.parse(JSON.stringify(await settings?.find({}).limit(1).toArray()))
 
-  const positive = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'positive' } }, { $sample: { size: parseInt(setting[0].dataset_size) / 2 } }]).toArray()))
-  const negative = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'negative' } }, { $sample: { size: parseInt(setting[0].dataset_size) / 2 } }]).toArray()))
+  const negative_size = Math.round(parseInt(setting[0].dataset_size) * 0.55)
+  const positive_size = parseInt(setting[0].dataset_size) - negative_size
+
+  const positive = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'positive' } }, { $sample: { size: positive_size } }]).toArray()))
+  const negative = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'negative' } }, { $sample: { size: negative_size } }]).toArray()))
 
   const result = [...positive, ...negative]
 
@@ -41,7 +44,9 @@ export async function vectorizer(data: PreprocessingData[]) {
   const positive = result.filter(({ label }) => label == 1)
   const negative = result.filter(({ label }) => label == 0)
 
-  const adds = smoteSampling(positive, negative)
+  const smote_size = parseInt(setting[0].dataset_size) - negative.length - positive.length
+
+  const adds = smoteSampling(positive, 1, smote_size)
 
   return [...result, ...adds]
 }
