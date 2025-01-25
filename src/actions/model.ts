@@ -12,7 +12,7 @@ const features = (await db())?.collection('features')
 export async function index() {
   const setting = JSON.parse(JSON.stringify(await settings?.find({}).limit(1).toArray()))
 
-  const negative_size = Math.round(parseInt(setting[0].dataset_size) * 0.55)
+  const negative_size = Math.round(parseInt(setting[0].dataset_size) * 0.6)
   const positive_size = parseInt(setting[0].dataset_size) - negative_size
 
   const positive = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'positive' } }, { $sample: { size: positive_size } }]).toArray()))
