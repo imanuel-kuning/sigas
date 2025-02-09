@@ -33,6 +33,7 @@ interface PostsData {
   text: string
   location: string
   date: string
+  sentiment: string
 }
 
 interface PreprocessingData {
@@ -53,4 +54,36 @@ interface Settings {
 interface Features {
   feature: number[]
   label: number
+}
+
+interface FeatureProps {
+  feature: GeoJsonObject
+  layer: Layer
+}
+
+interface CurrentMap {
+  location: {
+    province: string
+    positive: number
+    negative: number
+    ratio: number
+  }
+  setLocation: (location: { province: string; positive: number; negative: number; ratio: number }) => void
+}
+
+interface GroupedResult {
+  location: string
+  positive: number
+  negative: number
+  ratio: number
+}
+
+interface ChartData {
+  labels: string[]
+  data: number[]
+}
+
+interface WeekGroup {
+  label: string
+  data: PostsData[]
 }

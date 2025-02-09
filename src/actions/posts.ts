@@ -5,6 +5,13 @@ import { ObjectId } from 'mongodb'
 
 const collection = (await db())?.collection('posts')
 
+export async function sentimentCount() {
+  const positive = await collection?.countDocuments({ sentiment: 'positive' })
+  const negative = await collection?.countDocuments({ sentiment: 'negative' })
+
+  return { positive, negative }
+}
+
 export async function index() {
   const result = await collection?.find({}).sort({ _id: -1 }).toArray()
   return JSON.parse(JSON.stringify(result))
@@ -21,12 +28,12 @@ export async function count() {
   return result
 }
 
-export async function store(data: PostsData) {
+export async function store(data: { text: string; location: string; date: string }) {
   await collection?.insertOne(data)
   return { message: 'Successfully store data' }
 }
 
-export async function storeMany(data: PostsData[]) {
+export async function storeMany(data: { text: string; location: string; date: string }[]) {
   await collection?.insertMany(data)
   return { message: 'Successfully store bulk data' }
 }

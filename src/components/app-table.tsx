@@ -6,6 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AppTablePagination } from './app-table-pagination'
 import { useState } from 'react'
 import { Input } from './ui/input'
+import { Button } from './ui/button'
+import { Download } from 'lucide-react'
+import CsvDownloader from 'react-csv-downloader'
+import { usePathname } from 'next/navigation'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -13,6 +17,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function AppTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+  const pathName = usePathname()
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState<string>('')
   const table = useReactTable({
@@ -40,8 +45,14 @@ export function AppTable<TData, TValue>({ columns, data }: DataTableProps<TData,
       className="rounded border p-2 overflow-auto
     "
     >
-      <div className="flex items-center py-2 px-1">
+      <div className="flex items-center justify-between py-2 px-1">
         <Input placeholder="Search" value={globalFilter ?? ''} onChange={(e) => table.setGlobalFilter(String(e.target.value))} className="w-1/3" id="filter" name="filter" />
+        <CsvDownloader filename={pathName} datas={data as []} separator=";">
+          <Button variant="ghost" size="sm">
+            <Download />
+            Download
+          </Button>
+        </CsvDownloader>
       </div>
       <Table>
         <TableHeader>

@@ -224,3 +224,38 @@ export function smoteSampling(features: Features[], label: number, size: number)
   const result = newFeatures.map((feature: number[]) => ({ feature, label }))
   return result
 }
+
+export function groupLocationSentiment(data: Posts[]) {
+  // Initialize an object to store the grouped data
+  const groupedData: Record<string, GroupedResult> = {}
+
+  // Iterate through the data
+  data.forEach((item: Posts) => {
+    const location = item.location
+    const sentiment = item.sentiment
+
+    // Initialize the location entry if it doesn't exist
+    if (!groupedData[location]) {
+      groupedData[location] = {
+        location: location,
+        positive: 0,
+        negative: 0,
+        ratio: 0,
+      }
+    }
+
+    // Increment the respective sentiment count
+    if (sentiment === 'positive') {
+      groupedData[location].positive++
+    } else if (sentiment === 'negative') {
+      groupedData[location].negative++
+    }
+
+    groupedData[location].ratio = groupedData[location].negative / (groupedData[location].negative + groupedData[location].positive)
+  })
+
+  // Convert the grouped data object into an array
+  const result: GroupedResult[] = Object.values(groupedData)
+
+  return result
+}

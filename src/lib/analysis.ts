@@ -13,7 +13,7 @@ export function split(vector: Features[], ratio: number) {
 }
 
 export function randomForest(x_train: number[][], y_train: number[], x_test: number[][]) {
-  const classifier = new RandomForestClassifier({ seed: 3, maxFeatures: 0.8, replacement: true, nEstimators: 25 })
+  const classifier = new RandomForestClassifier({ nEstimators: 100 })
   classifier.train(x_train, y_train)
   return classifier.predict(x_test)
 }

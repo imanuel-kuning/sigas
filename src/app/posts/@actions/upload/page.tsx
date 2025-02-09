@@ -23,7 +23,7 @@ const formSchema = z.object({
 export default function Page() {
   const { refresh } = useRefresh()
   const [isPending, setTransition] = useTransition()
-  const [data, setData] = useState<PostsData[]>([])
+  const [data, setData] = useState<{ text: string; location: string; date: string }[]>([])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

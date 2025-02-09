@@ -21,6 +21,7 @@ const formSchema = z.object({
   text: z.string().nonempty(),
   location: z.string().nonempty(),
   date: z.string().nonempty(),
+  sentiment: z.string(),
 })
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -43,11 +44,13 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       text: '',
       location: '',
       date: '',
+      sentiment: '',
     },
     values: {
       text: data?.text as string,
       location: data?.location as string,
       date: data?.date as string,
+      sentiment: data?.sentiment as string,
     },
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -129,6 +132,30 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                     <FormLabel>Date</FormLabel>
                     <FormControl>
                       <Input {...field} type="datetime-local" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="sentiment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sentiment</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="positive">Positive</SelectItem>
+                          <SelectItem value="negative">Negative</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

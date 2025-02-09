@@ -5,6 +5,13 @@ import { ObjectId } from 'mongodb'
 
 const collection = (await db())?.collection('dataset')
 
+export async function sentimentCount() {
+  const positive = await collection?.countDocuments({ sentiment: 'positive' })
+  const negative = await collection?.countDocuments({ sentiment: 'negative' })
+
+  return { positive, negative }
+}
+
 export async function index() {
   const result = await collection?.find({}).sort({ _id: -1 }).toArray()
   return JSON.parse(JSON.stringify(result))

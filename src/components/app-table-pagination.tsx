@@ -10,11 +10,10 @@ interface DataTablePaginationProps<TData> {
 
 export function AppTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-between px-2 py-2 overflow-auto">
-      <div className="flex-1 text-sm text-muted-foreground">Total {table.getRowCount()} row(s).</div>
+    <div className="flex items-center justify-between px-2 py-2 overflow-visible">
+      <div className="flex-1 text-sm text-muted-foreground">{table.getRowCount()} row(s).</div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value: string) => {

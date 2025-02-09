@@ -2,59 +2,62 @@
 
 import { ChartBar, CircuitBoard, Combine, Database, Home, Map, Twitter } from 'lucide-react'
 
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import AppSidebarBadge from './app-sidebar-badge'
-
-const dashboard = [
-  {
-    title: 'Home',
-    url: '/',
-    icon: Home,
-  },
-  {
-    title: 'Map',
-    url: '/map',
-    icon: Map,
-  },
-  {
-    title: 'Chart',
-    url: '/chart',
-    icon: ChartBar,
-  },
-]
-
-const dataset = [
-  {
-    title: 'Dataset',
-    url: '/dataset',
-    icon: Database,
-    badge: 0,
-  },
-  {
-    title: 'X Posts',
-    url: '/posts',
-    icon: Twitter,
-    badge: 0,
-  },
-]
-
-const process = [
-  {
-    title: 'Model Evaluation',
-    url: '/model',
-    icon: CircuitBoard,
-  },
-  {
-    title: 'Classification',
-    url: '/classification',
-    icon: Combine,
-  },
-]
+import { useLocation } from '@/hooks/use-location'
 
 export function AppSidebar() {
   const pathName = usePathname()
+  const { location } = useLocation()
+
+  const dashboard = [
+    {
+      title: 'Home',
+      url: '/',
+      icon: Home,
+    },
+    {
+      title: 'Map',
+      url: '/map',
+      icon: Map,
+      badge: location.province,
+    },
+    {
+      title: 'Chart',
+      url: '/chart',
+      icon: ChartBar,
+    },
+  ]
+
+  const dataset = [
+    {
+      title: 'Dataset',
+      url: '/dataset',
+      icon: Database,
+      badge: 0,
+    },
+    {
+      title: 'X Posts',
+      url: '/posts',
+      icon: Twitter,
+      badge: 0,
+    },
+  ]
+
+  const process = [
+    {
+      title: 'Model Evaluation',
+      url: '/model',
+      icon: CircuitBoard,
+    },
+    {
+      title: 'Classification',
+      url: '/classification',
+      icon: Combine,
+    },
+  ]
 
   return (
     <Sidebar>
@@ -78,6 +81,7 @@ export function AppSidebar() {
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
+                  {item.badge && <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
