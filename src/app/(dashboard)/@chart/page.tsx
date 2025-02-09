@@ -2,7 +2,6 @@
 
 import { index } from '@/actions/chart'
 import AppCard from '@/components/app-card'
-import AppGauge from '@/components/app-gauge'
 import { useLocation } from '@/hooks/use-location'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js'
 import { useEffect, useState, useTransition } from 'react'
@@ -26,7 +25,7 @@ export default function Page() {
 
   return (
     <div className="grid md:grid-cols-3 gap-3">
-      <div className="md:col-span-2">
+      <div className="md:col-span-3">
         <AppCard title="Total">
           {isPending && 'Loading...'}
           <Bar
@@ -43,12 +42,6 @@ export default function Page() {
               ],
             }}
           />
-        </AppCard>
-      </div>
-      <div>
-        <AppCard title="Index">
-          {isPending && 'Loading...'}
-          <AppGauge value={location.negative / (location.negative + location.positive)} />
         </AppCard>
       </div>
       <div className="md:col-span-3">
