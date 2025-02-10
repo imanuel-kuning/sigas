@@ -57,7 +57,8 @@ export async function analysis(vector: Features[]) {
   const [x_train, y_train, x_test, y_test] = split(vector, parseFloat(setting[0].split_size))
   const y_prediction = randomForest(x_train, y_train, x_test)
   const result = confusionMatrix(y_test, y_prediction)
-
+  console.log(`y_test = ${y_test}`)
+  console.log(`y_pred = ${y_prediction}`)
   return result
 }
 
