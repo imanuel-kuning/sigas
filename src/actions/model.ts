@@ -1,6 +1,7 @@
 'use server'
 
 import { confusionMatrix, randomForest, split } from '@/lib/analysis'
+
 import db from '@/lib/database'
 import { Preprocessing } from '@/lib/preprocessing'
 import { smoteSampling, vector } from '@/lib/utils'
@@ -44,10 +45,11 @@ export async function vectorizer(data: PreprocessingData[]) {
   const positive = result.filter(({ label }) => label == 1)
   const negative = result.filter(({ label }) => label == 0)
 
-  const eachSize = parseInt(setting[0].dataset_size) / 2
+  const majorSize = parseInt(setting[0].dataset_size) * 0.75
+  const minorSize = parseInt(setting[0].dataset_size) - majorSize
 
-  const addsPositive = positive.length < eachSize ? smoteSampling(positive, 1, eachSize - positive.length) : []
-  const addsNegative = negative.length < eachSize ? smoteSampling(negative, 0, eachSize - negative.length) : []
+  const addsPositive = positive.length < minorSize ? smoteSampling(positive, 1, minorSize - positive.length) : []
+  const addsNegative = negative.length < majorSize ? smoteSampling(negative, 0, majorSize - negative.length) : []
 
   return [...result, ...addsPositive, ...addsNegative]
 }
@@ -57,9 +59,8 @@ export async function analysis(vector: Features[]) {
   const [x_train, y_train, x_test, y_test] = split(vector, parseFloat(setting[0].split_size))
   const y_prediction = randomForest(x_train, y_train, x_test)
   const result = confusionMatrix(y_test, y_prediction)
-  console.log(`y_test = ${y_test}`)
-  console.log(`y_pred = ${y_prediction}`)
-  return result
+
+  return { accuracy: result.accuracy }
 }
 
 export async function store(data: Features[]) {
