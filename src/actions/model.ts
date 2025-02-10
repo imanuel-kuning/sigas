@@ -15,8 +15,8 @@ export async function index() {
   const majorSize = parseInt(setting[0].dataset_size) * 0.75
   const minorSize = parseInt(setting[0].dataset_size) - majorSize
 
-  const positive = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'positive' } }, { $sample: { size: majorSize } }]).toArray()))
-  const negative = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'negative' } }, { $sample: { size: minorSize } }]).toArray()))
+  const positive = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'positive' } }, { $sample: { size: minorSize } }]).toArray()))
+  const negative = JSON.parse(JSON.stringify(await dataset?.aggregate([{ $match: { sentiment: 'negative' } }, { $sample: { size: majorSize } }]).toArray()))
 
   const result = [...positive, ...negative]
 
