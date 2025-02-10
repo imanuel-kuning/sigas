@@ -1,4 +1,4 @@
-import { RandomForestClassifier } from 'ml-random-forest'
+import { RandomForestRegression } from 'ml-random-forest'
 import { ConfusionMatrix } from 'ml-confusion-matrix'
 //@ts-expect-error packaga doesn't include types
 import trainTestSplit from 'train-test-split'
@@ -16,9 +16,9 @@ export function randomForest(x_train: number[][], y_train: number[], x_test: num
   const options = {
     nEstimators: 300,
   }
-  const classifier = new RandomForestClassifier(options)
+  const classifier = new RandomForestRegression(options)
   classifier.train(x_train, y_train)
-  return classifier.predict(x_test)
+  return classifier.predict(x_test).map((e) => Math.round(e))
 }
 
 export function confusionMatrix(y_test: number[], y_prediction: number[]) {
